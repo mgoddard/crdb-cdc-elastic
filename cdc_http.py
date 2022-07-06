@@ -17,11 +17,13 @@ Ref.
 
 """
 
-import os, json, re, sys
+import os, json, re, sys, logging
 from flask import (Flask, request, jsonify)
 import requests
 import urllib3
 import urllib.parse
+
+logging.basicConfig(level=logging.INFO, format="[%(asctime)s] %(message)s", datefmt="%m/%d/%Y %I:%M:%S %p")
 
 # Suppress warnings when using requests with "verify=False" (e.g. no SSL validation)
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -40,20 +42,20 @@ if len(sys.argv) > 1:
     index_name = sys.argv[2]
     r = requests.put(es_url + "/" + index_name, auth=(es_user, es_passwd), verify=False)
     if 401 == r.status_code:
-      print("Unauthorized: make sure ES_USER and ES_PASSWD are set correctly")
+      logging.error("Unauthorized: ensure your ES_USER and ES_PASSWD environment variables are set")
       sys.exit(1)
     elif 200 != r.status_code:
-      print(json.dumps(r.json(), sort_keys=True, indent=2))
+      logging.error(json.dumps(r.json(), sort_keys=True, indent=2))
       sys.exit(1)
     else:
       sys.exit(0)
   else:
-    print("Usage: {} --create-index index_name".format(sys.argv[0]))
+    logging.warn("Usage: {} --create-index index_name".format(sys.argv[0]))
     sys.exit(1)
 
 @app.route("/<date>/<full_id>", methods = ["PUT"])
 def jsonHandler(date, full_id):
-  print("date: {}, full_id: {}".format(date, full_id))
+  logging.debug("date: {}, full_id: {}".format(date, full_id))
   db = None
   schema = None
   table = None
@@ -62,7 +64,7 @@ def jsonHandler(date, full_id):
     db = m.group(1)
     schema = m.group(2)
     table = m.group(3)
-    print("DB: {}, schema: {}, table: {}".format(db, schema, table))
+    logging.debug("DB: {}, schema: {}, table: {}".format(db, schema, table))
     index_name = db
     type_name = schema + '-' + table
     # Could be a multi-row TXN
@@ -75,13 +77,12 @@ def jsonHandler(date, full_id):
       if es_json is None:
         # This corresponds to a DELETE in Elastic
         r = requests.delete(es_url + '/' + es_path, auth=(es_user, es_passwd), verify=False)
-        print("ES status code: {}".format(r.status_code))
-        print("ES response:", json.dumps(r.json(), sort_keys=True, indent=2))
+        logging.info("ES status code: {}".format(r.status_code))
       else:
         headers = {"Content-Type": "application/json"}
         r = requests.post(es_url + '/' + es_path, auth=(es_user, es_passwd), verify=False, json=es_json, headers=headers)
-        print("ES status code: {}".format(r.status_code))
-        print("ES response:", json.dumps(r.json(), sort_keys=True, indent=2))
+        logging.info("ES status code: {}".format(r.status_code))
+      logging.info("ES response: %s", r.json())
   return "OK", 200
 
 @app.route("/status", methods = ["GET"])
