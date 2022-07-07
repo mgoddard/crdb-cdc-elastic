@@ -36,7 +36,6 @@ es_passwd = os.getenv("ES_PASSWD", "")
 es_url = os.getenv("ES_URL", "https://localhost:9200")
 
 # Command line methods
-# TODO: Add a --query mode
 if len(sys.argv) > 1:
   if "--create-index" == sys.argv[1]:
     index_name = sys.argv[2]
@@ -55,6 +54,7 @@ if len(sys.argv) > 1:
 
 @app.route("/<date>/<full_id>", methods = ["PUT"])
 def jsonHandler(date, full_id):
+  rv = "OK", 200
   logging.debug("date: {}, full_id: {}".format(date, full_id))
   db = None
   schema = None
@@ -74,16 +74,19 @@ def jsonHandler(date, full_id):
       es_id = urllib.parse.quote_plus(es_id) # ES doesn't like '/' in the ID
       es_json = obj["after"]
       es_path = '/'.join([index_name, "_doc", es_id])
+      es_status = None
       if es_json is None:
         # This corresponds to a DELETE in Elastic
         r = requests.delete(es_url + '/' + es_path, auth=(es_user, es_passwd), verify=False)
-        logging.info("ES status code: {}".format(r.status_code))
       else:
         headers = {"Content-Type": "application/json"}
         r = requests.post(es_url + '/' + es_path, auth=(es_user, es_passwd), verify=False, json=es_json, headers=headers)
-        logging.info("ES status code: {}".format(r.status_code))
+      es_status = r.status_code
+      logging.info("ES status code: {}".format(es_status))
       logging.info("ES response: %s", r.json())
-  return "OK", 200
+      if es_status != 200 and es_status != 201:
+        rv = "FAILED", es_status
+  return rv
 
 @app.route("/status", methods = ["GET"])
 def status():
