@@ -92,10 +92,18 @@ SET CLUSTER SETTING
 
 * Create the HTTP changefeed into the Python Flask endpoint:
 ```
-CREATE CHANGEFEED FOR TABLE docs
+defaultdb=> CREATE CHANGEFEED FOR TABLE docs
 INTO 'https://cdc.la-cucaracha.net/cdc/'
 WITH full_table_name, updated;
+       job_id
+--------------------
+ 777046877208477698
+(1 row)
 ```
+
+## Using it
+
+
 
 ## References
 
