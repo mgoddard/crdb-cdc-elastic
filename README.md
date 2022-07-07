@@ -9,7 +9,7 @@ an added feature.
 
 For developers using CockroachDB, the full text search options really don't yet
 exist within the database itself.  Though CockroachDB does support Levenshtein and
-Soundex, and these can be combined in novel ways to support fuzzy matching in shorter
+Soundex, and these can be combined in novel ways to support fuzzy matching of shorter
 data elements, the effort to build out full text search is just beginning.
 
 Having said that, CockroachDB does support _changefeeds_, or _Change Data Capture_ (CDC).
@@ -21,6 +21,18 @@ Elasticsearch, which would provide that full text index and search capability.  
 in August 2020, I mentioned this in a [blog post](https://www.cockroachlabs.com/blog/full-text-indexing-search/)
 on full text search in CockroachDB and I just realized I hadn't yet found a demo of
 this integration.  That's the motivation for this post.
+
+## Solution Overview
+
+I opted to run this in a VM deployed in Google Cloud Platform, in the us-central1 region, because
+CockroachDB Serverless is available in that region.  Of the various types of endpoints currently
+available for [CREATE CHANGEFEED](https://www.cockroachlabs.com/docs/stable/create-changefeed.html),
+there isn't one which lines up directly with what Elasticsearch expects as input, so I needed to
+create a [Python Flask app](./cdc_http.py) which acts as the adapter between CockroachDB and Elasticsearch.
+I also decided to just run the Elasticsearch instance right there on that VM.  Since having all this
+communication be encrypted seemed like a good idea, I ran an Nginx instance as a proxy for both
+the Flask app and Elasticsearch. Let's Encrypt handles the SSL certificates.
+
 
 ## Setup in CockroachDB
 
