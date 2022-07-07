@@ -103,7 +103,93 @@ WITH full_table_name, updated;
 
 ## Using it
 
+I'm running the following from the VM.
 
+* Install an additional dependency for the HTML indexer: `sudo pip3 install beautifulsoup4`
+
+* Set an environment variable for the DB connection: `export DB_CONN_STR=$( cat ../CC_cred.txt )`
+
+* Index some URLS:
+```
+$ ./html_indexer.py https://www.cockroachlabs.com/blog/admission-control-in-cockroachdb/ https://www.cockroachlabs.com/blog/how-to-choose-db-index-keys/ https://www.cockroachlabs.com/docs/v21.1/example-apps.html https://www.cockroachlabs.com/docs/v22.1/multiregion-overview.html https://www.cockroachlabs.com/blog/can-i-scale/ https://www.cockroachlabs.com/blog/sigmod-2022-cockroachdb-multi-region-paper/ https://www.cockroachlabs.com/blog/living-without-atomic-clocks/ https://github.com/cockroachdb/pebble https://www.cockroachlabs.com/blog/netflix-media-infrastructure/ https://www.cockroachlabs.com/blog/full-text-indexing-search/
+Indexing uri https://www.cockroachlabs.com/blog/admission-control-in-cockroachdb/ now ...
+Indexing uri https://www.cockroachlabs.com/blog/how-to-choose-db-index-keys/ now ...
+Indexing uri https://www.cockroachlabs.com/docs/v21.1/example-apps.html now ...
+Indexing uri https://www.cockroachlabs.com/docs/v22.1/multiregion-overview.html now ...
+Indexing uri https://www.cockroachlabs.com/blog/can-i-scale/ now ...
+Indexing uri https://www.cockroachlabs.com/blog/sigmod-2022-cockroachdb-multi-region-paper/ now ...
+Indexing uri https://www.cockroachlabs.com/blog/living-without-atomic-clocks/ now ...
+Indexing uri https://github.com/cockroachdb/pebble now ...
+Indexing uri https://www.cockroachlabs.com/blog/netflix-media-infrastructure/ now ...
+Indexing uri https://www.cockroachlabs.com/blog/full-text-indexing-search/ now ...
+Total time: 5.30757999420166 s
+```
+
+* Back in the SQL CLI, check that they were inserted:
+```
+defaultdb=> select uri, length(content), ts from docs order by 2 desc;
+                                      uri                                       | length |             ts
+--------------------------------------------------------------------------------+--------+----------------------------
+ https://www.cockroachlabs.com/blog/admission-control-in-cockroachdb/           |  24985 | 2022-07-07 15:33:32.685422
+ https://www.cockroachlabs.com/docs/v22.1/multiregion-overview.html             |  21300 | 2022-07-07 15:33:33.672853
+ https://www.cockroachlabs.com/blog/living-without-atomic-clocks/               |  20184 | 2022-07-07 15:33:35.000319
+ https://www.cockroachlabs.com/blog/how-to-choose-db-index-keys/                |  16958 | 2022-07-07 15:33:32.970703
+ https://www.cockroachlabs.com/blog/can-i-scale/                                |  14654 | 2022-07-07 15:33:34.196958
+ https://www.cockroachlabs.com/blog/full-text-indexing-search/                  |  13387 | 2022-07-07 15:33:36.789336
+ https://www.cockroachlabs.com/blog/netflix-media-infrastructure/               |  12859 | 2022-07-07 15:33:36.247931
+ https://github.com/cockroachdb/pebble                                          |  12504 | 2022-07-07 15:33:35.708953
+ https://www.cockroachlabs.com/blog/sigmod-2022-cockroachdb-multi-region-paper/ |   9454 | 2022-07-07 15:33:34.70964
+ https://www.cockroachlabs.com/docs/v21.1/example-apps.html                     |   9373 | 2022-07-07 15:33:33.307314
+(10 rows)
+```
+
+* Try an ES search:
+
+The [search script](./es_search.py) runs a "phrase query" based on the terms provided to it via
+command line arguments.  The returned value, if there were any search hits, includes metadata
+about the search along with the values of the fields in the table as well as up to four highlighted
+matching snippets of up to 80 characters in length.  Feel free to adjust the script to suit your
+needs.
+
+```
+$ export ES_PASSWD="ad7yMq3nrg+2bGz-QWe*"
+$ ./es_search.py database region
+{
+  "_shards": {
+    "failed": 0,
+    "skipped": 0,
+    "successful": 1,
+    "total": 1
+  },
+  "hits": {
+    "hits": [
+      {
+        "_id": "public-docs-https://www.cockroachlabs.com/docs/v22.1/multiregionoverview.html",
+        "_ignored": [
+          "content.keyword"
+        ],
+        "_index": "defaultdb",
+        "_score": 1.8865218,
+        "highlight": {
+          "content": [
+            "<em>Database</em> <em>region</em> is a geographic region in which a database operates.",
+            "You must choose a <em>database</em> <em>region</em> from the list of available cluster regions.",
+            "To add another <em>database</em> <em>region</em>, use the ALTER DATABASE ...",
+            "Each <em>database</em> <em>region</em> can only belong to one super region."
+          ]
+        }
+      }
+    ],
+    "max_score": 1.8865218,
+    "total": {
+      "relation": "eq",
+      "value": 1
+    }
+  },
+  "timed_out": false,
+  "took": 16
+}
+```
 
 ## References
 

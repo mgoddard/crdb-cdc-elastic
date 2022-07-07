@@ -1,0 +1,46 @@
+SHOW JOBS output for two scenarios.
+
+Elasticsearch process isn't running as expected:
+
+job_id             | 777046877208477698
+job_type           | CHANGEFEED
+description        | CREATE CHANGEFEED FOR TABLE docs INTO 'https://cdc.la-cucaracha.net/cdc/' WITH full_table_name, updated
+statement          |
+user_name          | demouser
+status             | running
+running_status     | retryable error: retryable changefeed error: closing object: error response from server: 500 INTERNAL SERVER ERROR "<!doctype html>\n<html lang=en>\n<title>500 Internal Server Error</title>\n<h1>Internal Server Error</h1>\n<p>The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.</p>\n"
+created            | 2022-07-07 15:04:47.819983
+started            | 2022-07-07 15:04:47.843671
+finished           |
+modified           | 2022-07-07 19:41:08.377554
+fraction_completed |
+error              |
+coordinator_id     | 1
+trace_id           | 2969429992333199775
+last_run           | 2022-07-07 19:28:04.769576
+next_run           | 2022-07-07 19:28:34.769576
+num_runs           | 1
+execution_errors   | {}
+
+Elasticsearch is back up and running:
+
+job_id             | 777046877208477698
+job_type           | CHANGEFEED
+description        | CREATE CHANGEFEED FOR TABLE docs INTO 'https://cdc.la-cucaracha.net/cdc/' WITH full_table_name, updated
+statement          |
+user_name          | demouser
+status             | running
+running_status     | running: resolved=1657223024.433667138,0
+created            | 2022-07-07 15:04:47.819983
+started            | 2022-07-07 15:04:47.843671
+finished           |
+modified           | 2022-07-07 19:44:17.629955
+fraction_completed |
+error              |
+coordinator_id     | 1
+trace_id           | 2969429992333199775
+last_run           | 2022-07-07 19:28:04.769576
+next_run           | 2022-07-07 19:28:34.769576
+num_runs           | 1
+execution_errors   | {}
+

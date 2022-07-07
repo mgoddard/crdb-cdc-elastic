@@ -1,0 +1,16 @@
+SQL DELETE looks like this in the logs for cdc_http.py:
+
+[07/07/2022 07:47:18 PM] ES status code: 200
+[07/07/2022 07:47:18 PM] ES response: {'_index': 'defaultdb', '_id': 'public-docs-https://www.cockroachlabs.com/docs/v22.1/multiregionoverview.html', '_version': 2, 'result': 'deleted', '_shards': {'total': 2, 'successful': 1, 'failed': 0}, '_seq_no': 72, '_primary_term': 2}
+
+SQL INSERT looks like this:
+
+[07/07/2022 07:52:20 PM] ES status code: 201
+[07/07/2022 07:52:20 PM] ES response: {'_index': 'defaultdb', '_id': 'public-docs-https://www.cockroachlabs.com/blog/howtochoosedbindexkeys/', '_version': 1, 'result': 'created', '_shards': {'total': 2, 'successful': 1, 'failed': 0}, '_seq_no': 74, '_primary_term': 2}
+
+SQL UPDATE looks like this:
+
+[07/07/2022 07:54:21 PM] ES status code: 200
+[07/07/2022 07:54:21 PM] ES response: {'_index': 'defaultdb', '_id': 'public-docs-https://www.cockroachlabs.com/blog/caniscale/', '_version': 2, 'result': 'updated', '_shards': {'total': 2, 'successful': 1, 'failed': 0}, '_seq_no': 83, '_primary_term': 2}
+
+
