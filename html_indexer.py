@@ -11,8 +11,9 @@ import requests
 import random
 
 #
-# Prior to running, set this environment variable:
+# Prior to running:
 #
+#   $ sudo pip3 install beautifulsoup4
 #   $ export DB_CONN_STR="postgres://root@localhost:26257/defaultdb"
 #
 
