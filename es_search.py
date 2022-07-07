@@ -8,10 +8,14 @@ import json
 # Suppress warnings when using requests with "verify=False" (e.g. no SSL validation)
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-es_user = os.getenv("ES_USER")
-es_passwd = os.getenv("ES_PASSWD")
-es_url = os.getenv("ES_URL")
+es_user = os.getenv("ES_USER", "elastic")
+es_url = os.getenv("ES_URL", "https://localhost:9200")
 es_index = os.getenv("ES_INDEX", "defaultdb") # CockroachDB database maps to Elastic index
+es_passwd = os.getenv("ES_PASSWD") # Must be set
+
+if es_passwd is None:
+  print("Environment variable ES_PASSWD must be set")
+  sys.exit(1)
 
 if len(sys.argv) < 2:
   print("Usage: {} your query string ...".format(sys.argv[0]))
