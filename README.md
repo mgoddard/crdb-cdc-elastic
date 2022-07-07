@@ -22,6 +22,9 @@ in August 2020, I mentioned this in a [blog post](https://www.cockroachlabs.com/
 on full text search in CockroachDB and I just realized I hadn't yet found a demo of
 this integration.  That's the motivation for this post.
 
+The example shown here is mainly to illustrate the CockroachDB / Elasticsearch integration,
+so it's simplified to just a single table oriented towards storing data taken from URLs.
+
 ## Solution Overview
 
 I opted to run this in a VM deployed in Google Cloud Platform, in the us-central1 region, because
@@ -40,7 +43,7 @@ ran the [HTML indexer](./html_indexer.py) from there as well.
 
 * Ubuntu 22.04 LTS running on `e2-standard-2` VM with 64 GB SSD
 * Network, subnet were `default`, where port 443 was open for HTTPS traffic
-* On the VM, the usual `sudo apt update` was run
+* On the VM: `sudo apt update`, then `sudo apt install postgresql-client`
 * Elasticsearch (ES) installed per [this reference](https://www.elastic.co/guide/en/elasticsearch/reference/current/targz.html)
 * ES was started up using the default config and the "Password for the elastic user" was recorded for later
 * Contents of this GitHub repo were transferred to the VM (e.g. `git clone https://github.com/mgoddard/crdb-cdc-elastic.git`)
@@ -51,7 +54,7 @@ ran the [HTML indexer](./html_indexer.py) from there as well.
 * Followed [this procedure](https://certbot.eff.org/) to get Let's Encrypt SSL certs for my Nginx installation
 * Replaced the resulting `/etc/nginx/nginx.conf` with an edited version of [this file](./nginx.conf), then restarted Nginx
 * Set up a CockroachDB Serverless instance via [this UI](https://cockroachlabs.cloud/login) in the same region as the VM
-* Created a CockroachDB user and grabbed the credentials using that same UI
+* Created a CockroachDB user and grabbed the credentials using that same UI.  I stored this in a file, `CC_cred.txt`.
 * Downloaded the CA cert per the "Download CA Cert (Required only once)" instructions on the Serverless UI
 * Started up the Flask CDC endpoint:
 ```
@@ -60,6 +63,16 @@ $ nohup ./cdc_http.py > cdc.log 2>&1 </dev/null &
 ```
 
 ## Setup: CockroachDB
+
+* Log into the CockroachDB Serverless instance (I use the `psql` CLI out of habit):
+```
+$ psql $( cat ./CC_cred.txt )
+psql (14.4 (Ubuntu 14.4-0ubuntu0.22.04.1), server 13.0.0)
+SSL connection (protocol: TLSv1.3, cipher: TLS_AES_128_GCM_SHA256, bits: 128, compression: off)
+Type "help" for help.
+
+defaultdb=>
+```
 
 * Create the simple table to store documents found on the Web:
 ```
