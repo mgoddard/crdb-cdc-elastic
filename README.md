@@ -71,22 +71,23 @@ psql (14.4 (Ubuntu 14.4-0ubuntu0.22.04.1), server 13.0.0)
 SSL connection (protocol: TLSv1.3, cipher: TLS_AES_128_GCM_SHA256, bits: 128, compression: off)
 Type "help" for help.
 
-defaultdb=>
 ```
 
 * Create the simple table to store documents found on the Web:
 ```
-CREATE TABLE docs
+defaultdb=> CREATE TABLE docs
 (
   uri STRING PRIMARY KEY
   , content STRING NOT NULL
   , ts TIMESTAMP DEFAULT NOW()
 );
+CREATE TABLE
 ```
 
-* Enable rangefeeds:
+* Enable rangefeeds (this may have been set up already in Serverless):
 ```
-SET CLUSTER SETTING kv.rangefeed.enabled = true;
+defaultdb=> SET CLUSTER SETTING kv.rangefeed.enabled = true;
+SET CLUSTER SETTING
 ```
 
 * Create the HTTP changefeed into the Python Flask endpoint:
