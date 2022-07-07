@@ -23,7 +23,7 @@ on full text search in CockroachDB and I just realized I hadn't yet found a demo
 this integration.  That's the motivation for this post.
 
 The example shown here is mainly to illustrate the CockroachDB / Elasticsearch integration,
-so it's simplified to just a single table oriented towards storing data taken from URLs.
+so it's simplified to just a single table which is oriented to storing data taken from URLs.
 
 ## Solution Overview
 
@@ -190,6 +190,15 @@ $ ./es_search.py database region
   "took": 16
 }
 ```
+## Final Thoughts
+
+That completes the little tour of CDC from CockroachDB to Elasticsearch.  Looking back at that original
+blog post mentioned above, I was a little cavalier in saying you could just use CDC to Elasticsearch for
+search, so now I feel a bit better about it.  It's been quite a while since I've done much work with
+Lucene, Solr, or Elasticsearch, and it's changing all the time, so most likely my example here is pretty
+basic.  In any case, I hope it inspires you to explore this type of integration should the need arise.
+
+Thank you for taking the time to read this over!
 
 ## References
 
@@ -197,4 +206,5 @@ $ ./es_search.py database region
 * [Phrase query](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-match-query-phrase.html)
 * [Filtering search results](https://www.elastic.co/guide/en/elasticsearch/reference/7.0/search-request-source-filtering.html)
 * [Trigrams in CockroachDB](https://github.com/cockroachdb/cockroach/issues/41285)
+* Examples of [log output](./cdc_http_log_examples.txt) and output of [SHOW JOBS](./show_jobs_es_down.txt)
 
