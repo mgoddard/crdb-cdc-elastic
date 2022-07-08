@@ -1,5 +1,7 @@
 # CockroachDB: CDC to Elasticsearch
 
+![arch diagram](./crdb-cdc-es-diagram.png)
+
 Full text indexing and search is such a common feature of applications these days.
 Users expect to be able to find a restaurant, a product, a movie review, or any
 number of other things quickly by entering a few search terms into a user
