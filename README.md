@@ -2,7 +2,7 @@
 
 Full text indexing and search is such a common feature of applications these days.
 Users expect to be able to find a restaurant, a product, a movie review, or any
-of a number of other things quickly by entering a few search terms into a user
+number of other things quickly by entering a few search terms into a user
 interface.  Many of these apps are built using a relational database as the data
 store, so the apps aren't generally dedicated to search, but incorporate that as
 an added feature.
@@ -27,17 +27,20 @@ so it's simplified to just a single table which is oriented to storing data take
 
 ## Solution Overview
 
-I opted to run this in a VM deployed in Google Cloud Platform, in the us-central1 region, because
-CockroachDB Serverless is available in that region.  Of the various types of endpoints currently
-available for [CREATE CHANGEFEED](https://www.cockroachlabs.com/docs/stable/create-changefeed.html),
-there isn't one which lines up directly with what Elasticsearch expects as input, so I needed to
-create a [Python Flask app](./cdc_http.py) which acts as the adapter between CockroachDB and Elasticsearch.
-I also decided to just run the Elasticsearch instance right there on that VM.  Since having all this
-communication be encrypted seemed like a good idea, I ran an Nginx instance as a proxy for both
-the Flask app and Elasticsearch. [Let's Encrypt](https://letsencrypt.org/getting-started/)
-handles the SSL certificates. I used [Google Domains](https://domains.google.com/) for DNS
-so that my Let's Encrypt setup would work. Finally, I kind of used this VM as a "base camp" and
-ran the [HTML indexer](./html_indexer.py) from there as well.
+I opted to run this in a VM deployed in Google Cloud Platform, in the
+us-central1 region, because CockroachDB Serverless is available in that region.
+Of the various types of endpoints currently available for
+[CREATE CHANGEFEED](https://www.cockroachlabs.com/docs/stable/create-changefeed.html),
+there isn't one which lines up directly with what Elasticsearch expects as
+input, so I needed to create a [Python Flask app](./cdc_http.py) which acts as
+the adapter between CockroachDB and Elasticsearch.  I also decided to just run
+the Elasticsearch instance right there on that VM.  Since encrypting all this
+communication seemed like a good idea, I ran an Nginx instance as a proxy for
+both the Flask app and Elasticsearch.
+[Let's Encrypt](https://letsencrypt.org/getting-started/) handles the SSL
+certificates. I used [Google Domains](https://domains.google.com/) for DNS so
+that my Let's Encrypt setup would work. Finally, I kind of used this VM as a
+"base camp" and ran the [HTML indexer](./html_indexer.py) from there as well.
 
 ## Setup: Infrastructure
 
