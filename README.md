@@ -195,6 +195,40 @@ $ ./es_search.py database region
   "took": 16
 }
 ```
+
+* Delete this row in the database:
+
+```
+defaultdb=> delete from docs where uri = 'https://www.cockroachlabs.com/docs/v22.1/multiregion-overview.html';
+DELETE 1
+```
+
+* Try that ES search again:
+
+```
+$ ./es_search.py database region
+{
+  "_shards": {
+    "failed": 0,
+    "skipped": 0,
+    "successful": 1,
+    "total": 1
+  },
+  "hits": {
+    "hits": [],
+    "max_score": null,
+    "total": {
+      "relation": "eq",
+      "value": 0
+    }
+  },
+  "timed_out": false,
+  "took": 4
+}
+```
+
+And the search returned no results, as expected.
+
 ## Final Thoughts
 
 That completes the little tour of CDC from CockroachDB to Elasticsearch.  Looking back at that original
