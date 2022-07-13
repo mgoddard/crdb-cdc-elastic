@@ -24,8 +24,9 @@ in August 2020, I mentioned this in a [blog post](https://www.cockroachlabs.com/
 on full text search in CockroachDB and I just realized I hadn't yet found a demo of
 this integration.  That's the motivation for this post.
 
-The example shown here is mainly to illustrate the CockroachDB / Elasticsearch integration,
+The goal of example is to illustrate a pattern for integrating CockroachDB with Elasticsearch,
 so it's simplified to just a single table which is oriented to storing data taken from URLs.
+Real world use could likely involve multiple tables with foreign key relationships.
 
 ## Solution Overview
 
@@ -61,6 +62,11 @@ that my Let's Encrypt setup would work. Finally, I kind of used this VM as a
 * Set up a CockroachDB Serverless instance via [this UI](https://cockroachlabs.cloud/login) in the same region as the VM
 * Created a CockroachDB user and grabbed the credentials using that same UI.  I stored this in a file, `CC_cred.txt`.
 * Downloaded the CA cert per the "Download CA Cert (Required only once)" instructions on the Serverless UI
+* Created an Elasticsearch index named `defaultdb` (CockroachDB database maps to Elasticsearch index):
+```
+$ export ES_PASSWD="that password recorded earlier"
+$ curl -XPUT -s -k -u elastic:$ES_PASSWD https://localhost:9200/defaultdb | jq
+```
 * Started up the Flask CDC endpoint:
 ```
 $ export ES_PASSWD="that password recorded earlier"
