@@ -26,7 +26,7 @@ this integration.  That's the motivation for this post.
 
 The goal of example is to illustrate a pattern for integrating CockroachDB with Elasticsearch,
 so it's simplified to just a single table which is oriented to storing data taken from URLs.
-Real world use could likely involve multiple tables with foreign key relationships.
+In the Real World, we'd probably have multiple tables with foreign key relationships.
 
 ## Solution Overview
 
